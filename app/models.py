@@ -59,12 +59,6 @@ class Books(db.Model):
         self.photo = photo
         self.sales = sales
 
-    # 头像
-    def avatar(self):
-        book = Books.query.filter_by(id=self.id).first()
-        img = book.photo
-        return img
-
 
 # 订单
 class Order(db.Model):
