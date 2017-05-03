@@ -12,20 +12,20 @@
     </tr>
     </thead>
     <tbody>
-    {% for fruit in order.items %}
+    {% for book in order.items %}
         <tr>
-            <td>{{ fruit.fruit_name }}</td>
-            <td>{{ fruit.price }}</td>
-            <td>{{ fruit.num }}
+            <td>{{ book.book_name }}</td>
+            <td>{{ book.price }}</td>
+            <td>{{ book.num }}
                 {% if order.status =='购物车' %}
-                    <a href="{{ url_for('changenum',id=fruit.id,num=1) }}" class="btn btn-default btn-sm" role="button">增加</a>
-                    <a href="{{ url_for('changenum',id=fruit.id,num=-1) }}" class="btn btn-default btn-sm"
+                    <a href="{{ url_for('changenum',id=book.id,num=1) }}" class="btn btn-default btn-sm" role="button">增加</a>
+                    <a href="{{ url_for('changenum',id=book.id,num=-1) }}" class="btn btn-default btn-sm"
                        role="button">减少</a>
                 {% endif %}
             </td>
-            <td>{{ fruit.cost }}</td>
+            <td>{{ book.cost }}</td>
         {% if order.status=='完成' %}
-            <td><a class="btn btn-default btn-lg" href="{{ url_for('assess',id = fruit.id ) }}">评价</a></td>
+            <td><a class="btn btn-default btn-lg" href="{{ url_for('assess',id = book.id ) }}">评价</a></td>
             {% endif %}
         </tr>
     {% endfor %}

@@ -5,13 +5,13 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 from app import app, lm, db, date, adminpassword
 from app.forms import LoginForm, RegisterForm, UploadForm, SearchForm, PayForm, AssessForm
-from app.models import User, Fruits, Order, OrderItem, Assess
+from app.models import User, Books, Order, OrderItem, Assess
 
 
 @app.route('/')
 def index():
-    fruits = Fruits.query.filter_by().order_by(Fruits.sales.desc()).limit(4).all()
-    return render_template('index.html', fruits=fruits)
+    Books = Books.query.filter_by().order_by(Books.sales.desc()).limit(4).all()
+    return render_template('index.html', Books=Books)
 
 
 # 管理员查看用户页面
@@ -28,16 +28,16 @@ def admin():
 
 
 # 管理员查看商品页面
-@app.route('/admin_fruit')
+@app.route('/admin_book')
 @login_required
-def admin_fruit():
+def admin_book():
     if g.user.is_admin():
         flash("管理员你好")
     else:
         flash("不是管理员,不能进入该页面")
         return redirect(url_for('goods'))
-    allfruit = Fruits.query.filter_by().all()
-    return render_template('admin_fruit.html', allfruit=allfruit)
+    allbook = Books.query.filter_by().all()
+    return render_template('admin_book.html', allbook=allbook)
 
 
 # 管理员查看订单页面
@@ -57,21 +57,21 @@ def admin_order():
 @app.route('/goods', methods=['GET', 'POST'])
 def goods():
     form = SearchForm()
-    fruits = Fruits.query.filter_by().all()
+    Books = Books.query.filter_by().all()
     if form.validate_on_submit():
         return redirect(url_for('search_results', query=form.search.data))
-    return render_template('goods.html', title="商品", fruits=fruits, form=form)
+    return render_template('goods.html', title="商品", Books=Books, form=form)
 
 
 # 商品详细信息(购买页面)
-@app.route('/fruit/<id>')
-def fruit(id):
-    fruit = Fruits.query.filter_by(id=id).first()
-    assess = Assess.query.filter_by(fruit_id=id).all()
-    if fruit is None:
+@app.route('/book/<id>')
+def book(id):
+    book = Books.query.filter_by(id=id).first()
+    assess = Assess.query.filter_by(book_id=id).all()
+    if book is None:
         flash("不存在该商品")
         return redirect(url_for('goods'))
-    return render_template('fruit.html', fruit=fruit,assess=assess)
+    return render_template('book.html', book=book,assess=assess)
 
 
 # 加入购物车
@@ -82,19 +82,19 @@ def cart(id, num=1):
     # 如果购物车中存在该商品则直接更新数量,如果不存在则增加该商品
     target = int(id)
     for a in order.items:
-        if target == a.fruit_id:
+        if target == a.book_id:
             a.changenum(num)  # 更新订单商品数量
             order.updatecost()  # 更新订单价格
             db.session.commit()
             flash('已增加数量')
-            return redirect(url_for('fruit', id=id))
+            return redirect(url_for('book', id=id))
     orderitem = OrderItem()
-    orderitem.add(fruit_id=id, num=num, order_id=order.id)
+    orderitem.add(book_id=id, num=num, order_id=order.id)
     db.session.add(orderitem)
     order.updatecost()  # 更新订单价格
     db.session.commit()
     flash('已加入购物车')
-    return redirect(url_for('fruit', id=id))
+    return redirect(url_for('book', id=id))
 
 
 # 查看购物车
@@ -108,14 +108,14 @@ def buy():
 @login_required
 def assess(id):
     form = AssessForm()
-    fruit = Fruits.query.filter_by(id=id).first()
+    book = Books.query.filter_by(id=id).first()
     if form.validate_on_submit():
-        assess = Assess(fruit_id=id,body=form.body.data,time=date.date())
+        assess = Assess(book_id=id,body=form.body.data,time=date.date())
         db.session.add(assess)
         db.session.commit()
         flash('评价成功')
         return redirect(url_for('list'))
-    return render_template('assess.html',fruit=fruit,form=form)
+    return render_template('assess.html',book=book,form=form)
 
 @app.route('/pay/<id>')
 @login_required
@@ -166,12 +166,12 @@ def order(id):
 @app.route('/changenum/<id>/<num>', methods=['GET'])
 @login_required
 def changenum(id, num):
-    fruit = OrderItem.query.filter_by(id=id).first()
+    book = OrderItem.query.filter_by(id=id).first()
     num = int(num)
-    fruit.changenum(num)  # 更新订单商品数量
-    if fruit.num <= 0:
-        db.session.delete(fruit)
-    order = Order.query.filter_by(id=fruit.Order_id).first()  # 购物车
+    book.changenum(num)  # 更新订单商品数量
+    if book.num <= 0:
+        db.session.delete(book)
+    order = Order.query.filter_by(id=book.Order_id).first()  # 购物车
     order.updatecost()  # 更新订单价格
     db.session.commit()
     return redirect(url_for('buy'))
@@ -188,9 +188,9 @@ def upload(id=False):
         return redirect(url_for('goods'))
     form = UploadForm()
     if form.validate_on_submit():
-        fruit = Fruits(name=form.name.data, introduction=form.introduction.data, price=form.price.data,
+        book = Books(name=form.name.data, introduction=form.introduction.data, price=form.price.data,
                        photo=form.photo.data)
-        db.session.add(fruit)
+        db.session.add(book)
         db.session.commit()
         flash('上传成功')
         return redirect(url_for('upload'))
@@ -227,7 +227,7 @@ def login():
 @app.route('/search_results/<query>')
 @login_required
 def search_results(query):
-    results = Fruits.query.filter_by(name=query).all()
+    results = Books.query.filter_by(name=query).all()
     return render_template('search_results.html',
                            results=results)
 
@@ -236,12 +236,12 @@ def search_results(query):
 @app.route('/delete/<id>', methods=['GET'])
 @login_required
 def delete(id):
-    fruit = Fruits.query.filter_by(id=id).first()
-    if fruit:
-        db.session.delete(fruit)
+    book = Books.query.filter_by(id=id).first()
+    if book:
+        db.session.delete(book)
         db.session.commit()
         flash("删除成功")
-    return redirect(url_for('admin_fruit'))
+    return redirect(url_for('admin_book'))
 
 
 # 注册功能
