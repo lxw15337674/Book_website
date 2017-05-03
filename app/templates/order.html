@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}登录{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+        <h3>订单信息</h3>
+    </div>
+
+    <div>
+        {% include 'order_detail.html' %}
+    </div>
+    <div align="center">
+        <h3>收货人地址: {{ order.address }}</h3>
+    <h3>支付方式: 在线付款</h3>
+    <h3>总商品金额: {{ order.cost }}</h3></div>
+    {% if order.status =='未支付' %}
+        <div style="margin-right: 800px;">
+            {{ wtf.quick_form(form) }}
+        </div>
+    {% else %}
+        <div align="center"><a class="btn btn-default btn-lg" href="{{ url_for('index') }}">回到首页</a></div>
+    {% endif %}
+{% endblock %}

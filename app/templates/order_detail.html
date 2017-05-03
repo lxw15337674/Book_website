@@ -1,0 +1,33 @@
+<table class="table table-condensed">
+    <caption>明细</caption>
+    <thead>
+    <tr>
+        <th>名字</th>
+        <th>单价</th>
+        <th>数量</th>
+        <th>小计</th>
+        {% if order.status=='完成' %}
+        <th>操作</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for fruit in order.items %}
+        <tr>
+            <td>{{ fruit.fruit_name }}</td>
+            <td>{{ fruit.price }}</td>
+            <td>{{ fruit.num }}
+                {% if order.status =='购物车' %}
+                    <a href="{{ url_for('changenum',id=fruit.id,num=1) }}" class="btn btn-default btn-sm" role="button">增加</a>
+                    <a href="{{ url_for('changenum',id=fruit.id,num=-1) }}" class="btn btn-default btn-sm"
+                       role="button">减少</a>
+                {% endif %}
+            </td>
+            <td>{{ fruit.cost }}</td>
+        {% if order.status=='完成' %}
+            <td><a class="btn btn-default btn-lg" href="{{ url_for('assess',id = fruit.id ) }}">评价</a></td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

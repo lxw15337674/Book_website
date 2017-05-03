@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-3">
+            <div style="width: auto;margin:auto 80px;">
+                <img src="{{ fruit.photo }}" width="180" height="180"
+                     class="img-rounded"/>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h1> 书名:{{ fruit.name }}</h1>
+            <h2>
+                现价:
+                <span style="color: red;"> ￥:<Strong>{{ fruit.price }}</Strong></span>
+            </h2>
+            <h3>商品介绍:</h3>
+            <div class="well ">
+                <p>{{ fruit.introduction }}</p>
+            </div>
+        </div>
+    </div>
+    <div align="center">
+        <a href="{{ url_for('cart',id = fruit.id) }}" class="btn btn-default btn-lg" role="button">加入购物车</a>
+    </div>
+    <br>
+    <h2>评价:</h2>
+    <div class="well ">
+        {% for a in assess %}
+            <p>某人于{{ a.time }}:</p>
+            <p><strong>&nbsp;&nbsp; &nbsp;&nbsp;{{ a.body }}</strong> </p>
+            <hr>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
