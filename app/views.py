@@ -10,8 +10,8 @@ from app.models import User, Books, Order, OrderItem, Assess
 
 @app.route('/')
 def index():
-    Books = Books.query.filter_by().order_by(Books.sales.desc()).limit(4).all()
-    return render_template('index.html', Books=Books)
+    books = Books.query.filter_by().order_by(Books.sales.desc()).limit(4).all()
+    return render_template('index.html', Books=books)
 
 
 # 管理员查看用户页面
@@ -57,10 +57,10 @@ def admin_order():
 @app.route('/goods', methods=['GET', 'POST'])
 def goods():
     form = SearchForm()
-    Books = Books.query.filter_by().all()
+    books = Books.query.filter_by().all()
     if form.validate_on_submit():
         return redirect(url_for('search_results', query=form.search.data))
-    return render_template('goods.html', title="商品", Books=Books, form=form)
+    return render_template('goods.html', title="商品", Books=books, form=form)
 
 
 # 商品详细信息(购买页面)
@@ -132,7 +132,6 @@ def pay(id):
 @login_required
 def list():
     user = User.query.filter_by(id=g.user.id).first()
-
     return render_template('list.html', user=user)
 
 
@@ -158,7 +157,6 @@ def order(id):
             return redirect(url_for('pay',id=id))
         else:
             flash("支付密码错误")
-
     return render_template('order.html', order=order,form=form)
 
 
